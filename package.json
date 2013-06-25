@@ -1,0 +1,38 @@
+{
+  "name": "makeapi-client",
+  "version": "0.2.0",
+  "description": "MakeAPI client library",
+  "main": "./index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mozilla/makeapi-client.git"
+  },
+  "author": "Webmaker Product Team <webmaker-staff@mozillafoundation.org>",
+  "contributors": [
+    {
+      "name": "Christopher De Cairos",
+      "email": "chris@chrisdecairos.ca"
+    },
+    {
+      "name": "Matthew Schranz",
+      "email": "schranz.m@gmail.com"
+    },
+    {
+      "name": "Simon Wex",
+      "email": "swex@mozilla.com"
+    }
+  ],
+  "license": "MPL-2.0",
+  "dependencies": {
+    "request": "2.21.0"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-csslint": "~0.1.2",
+    "grunt-contrib-jshint": "~0.4.3"
+  },
+  "engines": {
+    "node": ">=0.8.23",
+    "npm": ">=1.2.10"
+  }
+}
