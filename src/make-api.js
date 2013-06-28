@@ -236,6 +236,12 @@ var module = module || undefined;
       csrfToken = options.csrf;
     }
 
+    function negateFilter( filter ) {
+      return {
+        not: filter
+      };
+    }
+
     return {
       searchFilters: [],
       sortBy: [],
@@ -248,28 +254,43 @@ var module = module || undefined;
 
         for ( var key in options ) {
           if ( options.hasOwnProperty( key ) && this[ key ] ) {
-            this[ key ]( options[ key ] );
+            if ( Array.isArray( options[ key ] ) ) {
+              this[ key ].apply( this, options[ key ] );
+            } else {
+              this[ key ]( options[ key ] );
+            }
           }
         }
 
         return this;
       },
 
-      author: function( name ) {
-        this.searchFilters.push({
+      author: function( name, not ) {
+        var filter = {
           term: {
             author: name
           }
-        });
+        };
+
+        if ( not ) {
+          filter = negateFilter( filter );
+        }
+
+        this.searchFilters.push( filter );
+
         return this;
       },
 
-      user: function( id ) {
-        this.makerID = id;
+      user: function( id, not ) {
+        this.makerID = {
+          id: id,
+          not: !!not
+        };
+
         return this;
       },
 
-      tags: function( options ) {
+      tags: function( options, not ) {
         var tagOptions = {
               tags: options.tags || options,
               execution: options.execution || "and"
@@ -278,23 +299,134 @@ var module = module || undefined;
           tagOptions.tags = [ tagOptions.tags ];
         }
 
-        this.searchFilters.push({
+        tagOptions = {
           terms: tagOptions
-        });
+        };
+
+        if ( not ) {
+          tagOptions = negateFilter( tagOptions );
+        }
+
+        this.searchFilters.push( tagOptions );
         return this;
       },
 
-      tagPrefix: function( prefix ) {
+      tagPrefix: function( prefix, not ) {
         if ( !prefix || typeof prefix !== "string" ) {
           return this;
         }
 
-        this.searchFilters.push({
+        var filter = {
           prefix: {
             tags: prefix
           }
-        });
+        };
 
+        if ( not ) {
+          filter = negateFilter( filter );
+        }
+
+        this.searchFilters.push( filter );
+        return this;
+      },
+
+      url: function( makeUrl, not ) {
+        var filter = {
+          term: {
+            url: escape( makeUrl )
+          }
+        };
+
+        if ( not ) {
+          filter = negateFilter( filter );
+        }
+
+        this.searchFilters.push( filter );
+        return this;
+      },
+
+      contentType: function( contentType, not ) {
+        var filter = {
+          term: {
+            contentType: contentType
+          }
+        };
+
+        if ( not ) {
+          filter = negateFilter( filter );
+        }
+
+        this.searchFilters.push( filter );
+        return this;
+      },
+
+      remixedFrom: function( projectID, not ) {
+        var filter = {
+          term: {
+            remixedFrom: projectID
+          }
+        };
+
+        if ( not ) {
+          filter = negateFilter( filter );
+        }
+
+        this.searchFilters.push( filter );
+        return this;
+      },
+
+      id: function( id, not ) {
+        var filter = {
+          query: {
+            field: {
+              _id: id
+            }
+          }
+        };
+
+        if ( not ) {
+          filter = negateFilter( filter );
+        }
+
+        this.searchFilters.push( filter );
+        return this;
+      },
+
+      title: function( title, not ) {
+        var filter = {
+          query: {
+            query_string: {
+              query: title,
+              fields: [ "title" ],
+              default_operator: "AND"
+            }
+          }
+        };
+
+        if ( not ) {
+          filter = negateFilter( filter );
+        }
+
+        this.searchFilters.push( filter );
+        return this;
+      },
+
+      description: function( description, not ) {
+        var filter = {
+          query: {
+            query_string: {
+              query: description,
+              fields: [ "description" ],
+              default_operator: "AND"
+            }
+          }
+        };
+
+        if ( not ) {
+          filter = negateFilter( filter );
+        }
+
+        this.searchFilters.push( filter );
         return this;
       },
 
@@ -329,70 +461,6 @@ var module = module || undefined;
 
         this.sortBy.push( field );
 
-        return this;
-      },
-
-      url: function( makeUrl ) {
-        this.searchFilters.push({
-          term: {
-            url: escape( makeUrl )
-          }
-        });
-        return this;
-      },
-
-      contentType: function( contentType ) {
-        this.searchFilters.push({
-          term: {
-            contentType: contentType
-          }
-        });
-        return this;
-      },
-
-      remixedFrom: function( projectID ) {
-        this.searchFilters.push({
-          term: {
-            remixedFrom: projectID
-          }
-        });
-        return this;
-      },
-
-      id: function( id ) {
-        this.searchFilters.push({
-          query: {
-            field: {
-              _id: id
-            }
-          }
-        });
-        return this;
-      },
-
-      title: function( title ) {
-        this.searchFilters.push({
-          query: {
-            query_string: {
-              query: title,
-              fields: [ "title" ],
-              default_operator: "AND"
-            }
-          }
-        });
-        return this;
-      },
-
-      description: function( description ) {
-        this.searchFilters.push({
-          query: {
-            query_string: {
-              query: description,
-              fields: [ "description" ],
-              default_operator: "AND"
-            }
-          }
-        });
         return this;
       },
 

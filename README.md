@@ -60,7 +60,9 @@ makeapi.then(function( err, makes, total ) {
 
 Add filters to your search based on the attributes of the options parameter.
 
->`options` - **required** - An object that can contain attributes corresponding to any other valid search function (see example below and other search function docs)
+>`options` - **required** - An object that can contain attributes corresponding to any other valid search function (see example below and other search function docs). The value of each search attribute can be a String or Array. If an array, the elements will be applied to the corresponding search function as arguments.
+>
+>Tags is a special case in find, It will only work with an object definition. See the example below.
 
 ####Example####
 ```
@@ -68,7 +70,12 @@ var makeapi = new Make( optionsObj );
 
 makeapi
   .find({
-    tags: [ "awesome", "technology" ],
+    // search for two tags
+    tags: [
+      {
+        tags: [ "awesome", "technology" ]
+      }
+    ],
     description: "kittens"
   })
   .then(function( err, makes ) {
@@ -77,13 +84,29 @@ makeapi
     }
     // handle success!
   });
+
+makeapi
+  .find({
+    tags: [
+      {
+        tags: [ "awesome", "technology" ]
+      },
+      // filter for makes *without* the tags above
+      false
+    ],
+    description: "kittens"
+  })
+  .then(function( err, makes ) {
+    // handle response
+  });
 ```
 
-###`author( name )`###
+###`author( name, not )`###
 
 Add a filter to the search for the specified author.
 
 >`name` - **required** - A string containing the authors name
+>`not` - Boolean value that when set `true`, will force a filter for makes that **Do Not** contain the specified name
 
 ####Example####
 ```
@@ -97,13 +120,24 @@ makeapi
     }
     // handle success!
   });
+
+// I want makes where the author is NOT mr. Anonymous
+makeapi
+  .author( "Mr. Anonymous", true )
+  .then(function( err, makes ) {
+    if ( err ) {
+      // handle error case
+    }
+    // handle success!
+  });
 ```
 
-###`user( name )`###
+###`user( name, not )`###
 
 Add a filter to the search for the specified username/email address.
 
 >`name` - **required** - A string containing the username or email address of the maker you want to filter for
+>`not` - Boolean value that when set `true`, will force a filter for makes that **Do Not** contain the specified user or email address
 
 ####Example####
 ```
@@ -117,16 +151,28 @@ makeapi
     }
     // handle success!
   });
+
+makeapi
+  .user( "amazingWebmaker", true )
+  .then(function( err, makes ) {
+    if ( err ) {
+      // handle error case
+    }
+    // handle success!
+  });
 ```
 
-###`tags( options )`###
+###`tags( options, not )`###
 
 Add a filter to the search for the specified tag[s].
 
->`options` - An Object or Array. If it is an Array, see `tags` on the following line. If it is an object, it must contain the following:
+>`options` - An Object or Array. If it is an Array, it should contain one or all of the tags you wish to filter against. If it is an object, it must contain the following:
 >
 > + `tags` - **required** - An Array of tags, specified as strings
 > + `execution` - **optional** - can be one of "and" and "or" Specifies if multiple tags should be searched for using AND/OR logic. defaults to "and". I.E. "tag1" OR "tag2"
+> + **ONLY THE OBJECT STYLE DEFINITION WORKS WITH `.find()`**
+>
+>`not` - Boolean value that when set `true`, will force a filter for makes that **Do Not** contain the specified tags
 
 ####Example####
 ```
@@ -150,11 +196,12 @@ makeapi
   .then(function( err, makes ) {});
 ```
 
-###`tagPrefix( prefix )`###
+###`tagPrefix( prefix, not )`###
 
 Add a filter to the search for the specified prefix. for example, this will match makes with the tag "applePie" if prefix is "apple"
 
->`prefix` - **required** - A string containing the username or email address of the maker you want to filter for
+>`prefix` - **required** - A string specifying the prefix you wish to filter for. i.e. It will match `"abc"` in `"abc:def"`
+>`not` - Boolean value that when set `true`, will force a filter for makes that **Do Not** contain the specified prefix
 
 ####Example####
 ```
@@ -162,6 +209,16 @@ var makeapi = new Make( optionsObj );
 
 makeapi
   .tagPrefix( "apple" )
+  .then(function( err, makes ) {
+    if ( err ) {
+      // handle error case
+    }
+    // handle success!
+  });
+
+// reverse the filter logic!
+makeapi
+  .tagPrefix( "apple", true )
   .then(function( err, makes ) {
     if ( err ) {
       // handle error case
@@ -233,11 +290,12 @@ makeapi
   .then(function( err, makes ) {});
 ```
 
-###`url( makeUrl )`###
+###`url( makeUrl, not )`###
 
 Filter makes for a specific URL. URL is unique for makes, so it will match one make only. The result will still always be an array.
 
 >`makeUrl` - **required** - A String defining a url to filter on
+>`not` - Boolean value that when set `true`, will force a filter for makes that **Do Not** contain the specified URL
 
 ####Example####
 ```
@@ -253,11 +311,12 @@ makeapi
   });
 ```
 
-###`contentType( contentType )`###
+###`contentType( contentType, not )`###
 
 Filter makes by contentType.
 
 >`contentType` - **required** - A String defining a contentType to filter for
+>`not` - Boolean value that when set `true`, will force a filter for makes that **Do Not** contain the specified content type
 
 ####Example####
 ```
@@ -271,13 +330,24 @@ makeapi
     }
     // handle success!
   });
+
+// reverse the filter logic!
+makeapi
+  .contentType( "application/x-thimble", true )
+  .then(function( err, makes ) {
+    if ( err ) {
+      // handle error case
+    }
+    // handle success!
+  });
 ```
 
-###`remixedFrom( projectID )`###
+###`remixedFrom( projectID, not )`###
 
 Filter for makes remixed from the project that has the specified project id
 
 >`projectID` - **required** - A String defining the project ID you are filtering for
+>`not` - Boolean value that when set `true`, will force a filter for makes that **Are Not** remixed from a make with the specified ID
 
 ####Example####
 ```
@@ -291,13 +361,24 @@ makeapi
     }
     // handle success!
   });
+
+// reverse the filter logic!
+makeapi
+  .remixedFrom( someOtherMake.id, true )
+  .then(function( err, makes ) {
+    if ( err ) {
+      // handle error case
+    }
+    // handle success!
+  });
 ```
 
-###`id( id )`###
+###`id( id, not )`###
 
 Filter for a make with the specified ID
 
 >`id` - **required** - A String defining the project ID you are filtering for
+>`not` - Boolean value that when set `true`, will force a filter for makes that **Do Not** match the specified ID
 
 ####Example####
 ```
@@ -311,20 +392,10 @@ makeapi
     }
     // handle success!
   });
-```
 
-###`title( title )`###
-
-Filter for makes matching the title - this is a full text search, so "Kittens" will match "I love Kittens!"
-
->`title` - **required** - A String defining the title search value
-
-####Example####
-```
-var makeapi = new Make( optionsObj );
-
+// reverse the filter logic!
 makeapi
-  .title( "Kittens" )
+  .id( "someMakesIDValue", true )
   .then(function( err, makes ) {
     if ( err ) {
       // handle error case
@@ -333,11 +404,43 @@ makeapi
   });
 ```
 
-###`description( description )`###
+###`title( title, not )`###
+
+Filter for makes matching the title - this is a full text search, so "Kittens" will match "I love Kittens!"
+
+>`title` - **required** - A String defining the title search value
+>`not` - Boolean value that when set `true`, will force a filter for makes that **Do Not** match the specified title
+
+####Example####
+```
+var makeapi = new Make( optionsObj );
+
+makeapi
+  .title( "application/x-thimble" )
+  .then(function( err, makes ) {
+    if ( err ) {
+      // handle error case
+    }
+    // handle success!
+  });
+
+// reverse the filter logic!
+makeapi
+  .title( "application/x-thimble", true )
+  .then(function( err, makes ) {
+    if ( err ) {
+      // handle error case
+    }
+    // handle success!
+  });
+```
+
+###`description( description, not )`###
 
 Filter for makes matching the description - this is a full text search, so "kittens and stuff" will match "a project about kittens and stuff!"
 
 >`description` - **required** - A String defining the description search value
+>`not` - Boolean value that when set `true`, will force a filter for makes that **Do Not** match the description
 
 ####Example####
 ```
@@ -345,6 +448,16 @@ var makeapi = new Make( optionsObj );
 
 makeapi
   .description( "kittens and stuff" )
+  .then(function( err, makes ) {
+    if ( err ) {
+      // handle error case
+    }
+    // handle success!
+  });
+
+// reverse the filter logic!
+makeapi
+  .description( "Kittens and stuff", true )
   .then(function( err, makes ) {
     if ( err ) {
       // handle error case
