@@ -8,8 +8,7 @@ var module = module || undefined;
 (function ( module ) {
   "use strict";
 
-  // Search Constants
-  var DEFAULT_SIZE = 10;
+  var MAX_QUERY_LENGTH = 80;
 
   var Make,
       xhrStrategy,
@@ -88,7 +87,7 @@ var module = module || undefined;
       callback = data;
       data = {};
     } else if ( typeof data === "string" ) {
-      path += "?s=" + data;
+      path = data.length ? path + "?" + data : path;
       data = {};
     }
 
@@ -236,18 +235,23 @@ var module = module || undefined;
       csrfToken = options.csrf;
     }
 
-    function negateFilter( filter ) {
-      return {
-        not: filter
-      };
+    function mapAndJoinTags( tags ) {
+      return tags.map(function( val ) {
+        return val.trim();
+      }).join( "," );
     }
 
     return {
-      searchFilters: [],
-      sortBy: [],
-      size: DEFAULT_SIZE,
-      pageNum: 1,
-      makerID: "",
+      queryPairs: [],
+
+      addPair: function( key, val, not ) {
+        if ( typeof val !== "string" || !val.length || val.length > MAX_QUERY_LENGTH  ) {
+          return this;
+        }
+        val = not ? "{!}" + val : val;
+        this.queryPairs.push( encodeURIComponent( key ) + "=" + encodeURIComponent( val ) );
+        return this;
+      },
 
       find: function( options ) {
         options = options || {};
@@ -261,251 +265,88 @@ var module = module || undefined;
             }
           }
         }
-
         return this;
       },
 
       author: function( name, not ) {
-        var filter = {
-          term: {
-            author: name
-          }
-        };
-
-        if ( not ) {
-          filter = negateFilter( filter );
-        }
-
-        this.searchFilters.push( filter );
-
-        return this;
+        return this.addPair( "author", name, not );
       },
 
       user: function( id, not ) {
-        this.makerID = {
-          id: id,
-          not: !!not
-        };
-
-        return this;
+        return this.addPair( "user", id, not );
       },
 
       tags: function( options, not ) {
-        var tagOptions = {
-              tags: options.tags || options,
-              execution: options.execution || "and"
-            };
-        if ( typeof tagOptions.tags === "string" ) {
-          tagOptions.tags = [ tagOptions.tags ];
+        if ( options ) {
+          var tags = options.tags || options,
+              execution = options.execution || "and";
+
+          if ( Array.isArray( tags ) ) {
+            tags = mapAndJoinTags( tags );
+          } else {
+            tags = mapAndJoinTags( tags.split( "," ) );
+          }
+
+          tags = execution + "," + tags;
+
+          return this.addPair( "tags", tags, not );
         }
-
-        tagOptions = {
-          terms: tagOptions
-        };
-
-        if ( not ) {
-          tagOptions = negateFilter( tagOptions );
-        }
-
-        this.searchFilters.push( tagOptions );
         return this;
       },
 
       tagPrefix: function( prefix, not ) {
-        if ( !prefix || typeof prefix !== "string" ) {
-          return this;
-        }
-
-        var filter = {
-          prefix: {
-            tags: prefix
-          }
-        };
-
-        if ( not ) {
-          filter = negateFilter( filter );
-        }
-
-        this.searchFilters.push( filter );
-        return this;
+        return this.addPair( "tagPrefix", prefix, not );
       },
 
-      url: function( makeUrl, not ) {
-        var filter = {
-          term: {
-            url: escape( makeUrl )
-          }
-        };
-
-        if ( not ) {
-          filter = negateFilter( filter );
-        }
-
-        this.searchFilters.push( filter );
-        return this;
+      url: function( url, not ) {
+        return this.addPair( "url", url, not );
       },
 
       contentType: function( contentType, not ) {
-        var filter = {
-          term: {
-            contentType: contentType
-          }
-        };
-
-        if ( not ) {
-          filter = negateFilter( filter );
-        }
-
-        this.searchFilters.push( filter );
-        return this;
+        return this.addPair( "contentType", contentType, not );
       },
 
-      remixedFrom: function( projectID, not ) {
-        var filter = {
-          term: {
-            remixedFrom: projectID
-          }
-        };
-
-        if ( not ) {
-          filter = negateFilter( filter );
-        }
-
-        this.searchFilters.push( filter );
-        return this;
+      remixedFrom: function( id, not ) {
+        return this.addPair( "remixedFrom", id, not );
       },
 
       id: function( id, not ) {
-        var filter = {
-          query: {
-            field: {
-              _id: id
-            }
-          }
-        };
-
-        if ( not ) {
-          filter = negateFilter( filter );
-        }
-
-        this.searchFilters.push( filter );
-        return this;
+        return this.addPair( "id", id, not );
       },
 
       title: function( title, not ) {
-        var filter = {
-          query: {
-            query_string: {
-              query: title,
-              fields: [ "title" ],
-              default_operator: "AND"
-            }
-          }
-        };
-
-        if ( not ) {
-          filter = negateFilter( filter );
-        }
-
-        this.searchFilters.push( filter );
-        return this;
+        return this.addPair( "title", title, not );
       },
 
-      description: function( description, not ) {
-        var filter = {
-          query: {
-            query_string: {
-              query: description,
-              fields: [ "description" ],
-              default_operator: "AND"
-            }
-          }
-        };
-
-        if ( not ) {
-          filter = negateFilter( filter );
-        }
-
-        this.searchFilters.push( filter );
-        return this;
+      description: function( desc, not ) {
+        return this.addPair( "description", desc, not );
       },
 
       limit: function( num ) {
-        var val = +num;
-        // Check that val is a positive, whole number
-        if ( typeof val === "number" && val > 0 && val % 1 === 0 ) {
-          this.size = val;
-        }
-        return this;
+        return this.addPair( "limit", num );
       },
 
       page: function( num ) {
-        var val = +num;
-        if ( typeof val === "number" && val > 0 && val % 1 === 0 ) {
-          this.pageNum = val;
-        }
-        return this;
+        return this.addPair( "page", num );
       },
 
       sortByField: function( field, direction ) {
-        if ( !field || typeof field !== "string" ) {
-          return this;
+        var sortOpts;
+        if ( typeof field === "string" ) {
+          sortOpts = field;
+          sortOpts += "," + ( direction ? direction : "desc" );
+          this.addPair( "sortByField", sortOpts );
         }
-
-        var sortObj;
-        if ( direction ) {
-          sortObj = {};
-          sortObj[ field ] = direction;
-          field = sortObj;
-        }
-
-        this.sortBy.push( field );
-
         return this;
       },
 
       then: function( callback ) {
-        var searchQuery = {
-          query: {
-            filtered: {
-              filter: {
-                and: [{
-                  missing: {
-                    field: "deletedAt",
-                    null_value: true
-                  }
-                }]
-              },
-              query: {
-                match_all: {}
-              }
-            }
-          }
-        };
+        var querystring = this.queryPairs.join( "&" );
 
-        searchQuery.size = this.size;
-        searchQuery.from = ( this.pageNum - 1 ) * this.size;
-
-        if ( Array.isArray( this.searchFilters )) {
-          searchQuery.query.filtered.filter.and = searchQuery.query.filtered.filter.and.concat( this.searchFilters );
-        }
-
-        if ( this.sortBy.length ) {
-          searchQuery.sort = this.sortBy;
-        }
-
-        if ( this.makerID ) {
-          searchQuery.makerID = this.makerID;
-          this.makerID = "";
-        }
-
-        this.size = DEFAULT_SIZE;
-        this.pageNum = 1;
-        this.searchFilters = [];
-        this.sortBy = [];
+        this.queryPairs = [];
 
         doXHR( "GET", "/api/makes/search",
-          escape( JSON.stringify( searchQuery ) ),
+          querystring,
           function( err, data ) {
             if ( err ) {
               callback( err );
