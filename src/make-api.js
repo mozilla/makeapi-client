@@ -8,8 +8,6 @@ var module = module || undefined;
 (function ( module ) {
   "use strict";
 
-  var MAX_QUERY_LENGTH = 80;
-
   var Make,
       xhrStrategy,
       apiURL,
@@ -245,7 +243,7 @@ var module = module || undefined;
       queryPairs: [],
 
       addPair: function( key, val, not ) {
-        if ( typeof val !== "string" || !val.length || val.length > MAX_QUERY_LENGTH  ) {
+        if ( typeof val !== "string" || !val.length ) {
           return this;
         }
         val = not ? "{!}" + val : val;
