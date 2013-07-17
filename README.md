@@ -466,6 +466,26 @@ makeapi
   });
 ```
 
+###`or()`###
+
+Changes the boolean logic applied to search filters from AND to OR
+
+####Example####
+```
+var makeapi = new Make( optionsObj );
+
+makeapi
+  .or()
+  .description( "kittens and stuff" )
+  .title( "chainsaws" )
+  .then(function( err, makes ) {
+    if ( err ) {
+      // handle error case
+    }
+    // handle success!
+  });
+```
+
 ## Search Results ##
 
 The Client Library wraps each make result in some API sugar for easy use. Call the following functions on individual make search results. i.e. `makes[4].rawTags()`
