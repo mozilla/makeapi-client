@@ -24,7 +24,8 @@
   ],
   "license": "MPL-2.0",
   "dependencies": {
-    "request": "2.21.0"
+    "request": "2.21.0",
+    "hawk": "1.0.0"
   },
   "devDependencies": {
     "grunt": "~0.4.1",

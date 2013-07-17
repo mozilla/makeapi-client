@@ -8,30 +8,43 @@ var module = module || undefined;
 (function ( module ) {
   "use strict";
 
+  var API_PREFIX = "/api/20130724/make/";
+
   var Make,
       xhrStrategy,
       apiURL,
+      credentials,
       auth,
       user,
       pass,
       csrfToken,
-      request;
+      request,
+      hawk;
 
   function nodeStrategy( type, path, data, callback ) {
     // Only use auth if provided
     var authObj = ( user && pass ) ? {
-        username: user,
-        password: pass,
-        sendImmediately: true
-      } : undefined;
+          username: user,
+          password: pass,
+          sendImmediately: true
+        } : undefined,
+        requestOptions = {
+          method: type,
+          uri: path,
+          json: data,
+          headers: {}
+        },
+        header;
 
-    request({
-      auth: authObj,
-      method: type,
-      uri: path,
-      json: data
-    }, function( err, res, body ) {
+    if ( authObj ) {
+      requestOptions.auth = authObj;
+    } else if( credentials ) {
+      header = hawk.client.header( path, type, { credentials: credentials } );
+      requestOptions.headers.Authorization = header.field;
+    }
 
+    request( requestOptions, function( err, res, body ) {
+      // TODO: Authenticate the server response
       if ( err ) {
         callback( err );
         return;
@@ -42,7 +55,7 @@ var module = module || undefined;
       }
 
       // There was an error of some sort, and the body contains the reason why
-      callback( body.error );
+      callback( body.reason );
     });
   }
 
@@ -221,10 +234,11 @@ var module = module || undefined;
   // Shorthand for creating a Make Object
   Make = function Make( options ) {
     apiURL = options.apiURL;
-    auth = options.auth;
 
-    if ( auth ) {
-      auth = auth.split( ":" );
+    if ( options.hawk ) {
+      credentials = options.hawk;
+    } else if ( options.auth ) {
+      auth = options.auth.split( ":" );
       user = auth[ 0 ];
       pass = auth[ 1 ];
     }
@@ -345,7 +359,7 @@ var module = module || undefined;
 
         this.queryPairs = [];
 
-        doXHR( "GET", "/api/makes/search",
+        doXHR( "GET", API_PREFIX + "search",
           querystring,
           function( err, data ) {
             if ( err ) {
@@ -364,17 +378,17 @@ var module = module || undefined;
 
       // Options should be of the form: { maker: "email@address", make: {...} }
       create: function create( options, callback ) {
-        doXHR( "POST", "/api/make", options, callback );
+        doXHR( "POST", API_PREFIX, options, callback );
         return this;
       },
 
       update: function update( id, options, callback ) {
-        doXHR( "PUT", "/api/make/" + id, options, callback );
+        doXHR( "PUT", API_PREFIX + id, options, callback );
         return this;
       },
 
       remove: function remove( id, callback ) {
-        doXHR( "DELETE", "/api/make/" + id, callback );
+        doXHR( "DELETE", API_PREFIX + id, callback );
         return this;
       }
     };
@@ -383,6 +397,7 @@ var module = module || undefined;
   // Depending on the environment we need to export our "Make" object differently.
   if ( typeof module !== 'undefined' && module.exports ) {
     request = require( "request" );
+    hawk = require( "hawk" );
     // npm install makeapi support
     xhrStrategy = nodeStrategy;
     module.exports = Make;
