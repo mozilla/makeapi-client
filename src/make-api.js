@@ -243,7 +243,9 @@ var module = module || undefined;
       queryPairs: [],
 
       addPair: function( key, val, not ) {
-        if ( typeof val !== "string" || !val.length ) {
+        val = val ? val.toString() : "";
+
+        if ( !val.length ) {
           return this;
         }
         val = not ? "{!}" + val : val;
