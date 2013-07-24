@@ -349,9 +349,13 @@ var module = module || undefined;
         if ( typeof field === "string" ) {
           sortOpts = field;
           sortOpts += "," + ( direction ? direction : "desc" );
-          this.addPair( "sortByField", sortOpts );
+          return this.addPair( "sortByField", sortOpts );
         }
         return this;
+      },
+
+      or: function() {
+        return this.addPair( "or", "1" );
       },
 
       then: function( callback ) {
