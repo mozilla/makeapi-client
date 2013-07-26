@@ -211,7 +211,7 @@ var module = module || undefined;
       update: function( email, callback ) {
         callback = callback || function(){};
         getMakeInstance()
-        .update( wrapped._id, { maker: email, make: wrapped }, callback );
+        .update( wrapped._id, wrapped, callback );
       }
 
     };
