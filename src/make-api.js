@@ -46,11 +46,14 @@ var module = module || undefined;
     request( requestOptions, function( err, res, body ) {
       // TODO: Authenticate the server response
       if ( err ) {
-        callback( err );
-        return;
+        return callback( err );
       }
 
       if ( res.statusCode === 200 ) {
+        if ( credentials && !hawk.client.authenticate( res, credentials, header.artifacts, { payload: JSON.stringify( body ) } ) ) {
+
+          return callback( "WARNING: THE RESPONSE DOES NOT AUTHENTICATE - YOUR TRAFFIC MY BE GETTING INTERCEPTED AND MODIFIED" );
+        }
         return callback( null, body );
       }
 
