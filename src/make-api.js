@@ -49,16 +49,12 @@ var module = module || undefined;
         return callback( err );
       }
 
-      if ( res.statusCode === 200 ) {
-        if ( credentials && !hawk.client.authenticate( res, credentials, header.artifacts, { payload: JSON.stringify( body ) } ) ) {
-
-          return callback( "WARNING: THE RESPONSE DOES NOT AUTHENTICATE - YOUR TRAFFIC MY BE GETTING INTERCEPTED AND MODIFIED" );
-        }
-        return callback( null, body );
+      var authenticated = hawk.client.authenticate( res, credentials, header.artifacts, { payload: JSON.stringify( body ) } );
+      if ( credentials && !authenticated ) {
+        return callback( "Warning: The response does not authenticate - your traffic may be getting intercepted and modified" );
       }
 
-      // There was an error of some sort, and the body contains the reason why
-      callback( body.reason );
+      callback( body.error, body );
     });
   }
 
