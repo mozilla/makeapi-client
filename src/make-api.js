@@ -219,7 +219,7 @@ var module = module || undefined;
     [ "url", "contentType", "locale", "title",
       "description", "author", "published", "tags", "thumbnail",
       "username", "remixedFrom", "_id", "emailHash", "createdAt",
-      "updatedAt" ].forEach( function( prop ) {
+      "updatedAt", "likes" ].forEach( function( prop ) {
         wrapped[ prop ] = make[ prop ];
     });
 
@@ -379,7 +379,6 @@ var module = module || undefined;
         );
       },
 
-      // Options should be of the form: { maker: "email@address", make: {...} }
       create: function create( options, callback ) {
         doXHR( "POST", API_PREFIX, options, callback );
         return this;
@@ -387,6 +386,11 @@ var module = module || undefined;
 
       update: function update( id, options, callback ) {
         doXHR( "PUT", API_PREFIX + id, options, callback );
+        return this;
+      },
+
+      like: function update( id, maker, callback ) {
+        doXHR( "PUT", API_PREFIX + "like/" + id, { maker: maker }, callback );
         return this;
       },
 
