@@ -10,7 +10,7 @@ Returns an instance of the client library that interacts with a Make API server.
 >`options` - An object with the following attributes:
 >
 > + `apiURL` - **required** - A valid URL pointing to the Make API server
-> + `auth` - **optional** - credentials to be used for basic authentication. In order to Create, Update or Delete Make records, you must provide auth. without this, you will only be permitted to search for makes.
+> + `hawk` - **optional** - Hawk credentials to be used for authentication. In order to Create, Update, Delete, Like and Unlike make records, you must provide auth. Without this, you will only be permitted to search for makes.
 
 ####Example####
 ```
@@ -22,12 +22,21 @@ var makeapi = new Make({
 // with auth - Full CRUD functionality
 var makeapiTwo = new Make({
   apiURL: "http://makeapi.webmaker.org",
-  auth: "makeapiconsumer:supersecretpassword"
+  hawk: {
+    // secret shared key
+    key: "00000000-0000-0000-000000000000",
+    // public key
+    id: "00000000-0000-0000-000000000000",
+    // algorithm used to calculate Request MAC - **The Make API Server requires sha265**
+    algorithm: "sha256"
+  }
 });
+```
+See [the MakeAPI README](https://github.com/mozilla/MakeAPI/#api-keys) for more info about API keys and Hawk
 
 ## Searching ##
 
-```
+
 ###`then( callback )`###
 
 Execute the search that has been built. Once the search data has been sent to the server, the make object will be cleared and ready to build another search.
@@ -733,16 +742,16 @@ makeapi
   .update(
     "idofthemakeiwanttoupdate",
     theObjectDefiningTheMake,
-    function( err, newMake ) {
+    function( err, updatedMake ) {
       if( err ) {
         // something went horribly wrong
       }
-      // newMake is your shiny updated make!
+      // updatedMake is your updated make!
     }
   );
 ```
 
-###`update( id, callback )`###
+###`delete( id, callback )`###
 
 This function will attempt to delete a make.
 
@@ -757,11 +766,59 @@ var makeapi = new Make( optionsObjWithAuth ); // this NEEDS auth
 makeapi
   .delete(
     "idofthemakeiwanttoupdate",
-    function( err, newMake ) {
+    function( err, deletedMake ) {
       if( err ) {
         // something went horribly wrong
       }
-      // the deleted make's data is in `make`
+      // the deleted make's data is in `deletedMake`
+    }
+  );
+```
+
+###`like( id, maker, callback )`###
+
+This function will add the user to the target makes' like array.
+
+>`id` - **required** - The ID of the make the user wants to like
+>`maker` -- **required** The email address associated with the Webmaker account that is liking a make. It is up to the consumer application to verify that they are dealing with a logged in user before issuing this API call.
+>`callback` A function to execute when the server completes or fails to mark the make as liked
+
+####Example####
+```
+var makeapi = new Make( optionsObjWithAuth ); // this NEEDS auth
+
+makeapi
+  .like(
+    "idofthemakeiwanttoupdate",
+    function( err, updatedMake ) {
+      if( err ) {
+        // something went horribly wrong
+      }
+      // the make that was updated is in updatedMake
+    }
+  );
+```
+
+###`unlike( id, maker, callback )`###
+
+This function will remove the user from the target makes' like array.
+
+>`id` - **required** - The ID of the make the user wants to unlike
+>`maker` -- **required** The email address associated with the Webmaker account which wishes to unlike a make. It is up to the consumer application to verify that they are dealing with a logged in user before issuing this API call.
+>`callback` A function to execute when the server completes or fails to mark the make as unliked
+
+####Example####
+```
+var makeapi = new Make( optionsObjWithAuth ); // this NEEDS auth
+
+makeapi
+  .unlike(
+    "idofthemakeiwanttoupdate",
+    function( err, updatedMake ) {
+      if( err ) {
+        // something went horribly wrong
+      }
+      // the make that was updated is in updatedMake
     }
   );
 ```
