@@ -44,7 +44,6 @@ var module = module || undefined;
     }
 
     request( requestOptions, function( err, res, body ) {
-      // TODO: Authenticate the server response
       if ( err ) {
         return callback( err );
       }
@@ -53,8 +52,12 @@ var module = module || undefined;
       if ( credentials && !authenticated ) {
         return callback( "Warning: The response does not authenticate - your traffic may be getting intercepted and modified" );
       }
-
-      callback( body.error, body );
+      if ( res.statusCode === 200 ) {
+        callback( null, body );
+      } else {
+        // something went wrong, the body contains the details
+        callback( body );
+      }
     });
   }
 
@@ -391,6 +394,11 @@ var module = module || undefined;
 
       like: function update( id, maker, callback ) {
         doXHR( "PUT", API_PREFIX + "like/" + id, { maker: maker }, callback );
+        return this;
+      },
+
+      unlike: function update( id, maker, callback ) {
+        doXHR( "PUT", API_PREFIX + "unlike/" + id, { maker: maker }, callback );
         return this;
       },
 
