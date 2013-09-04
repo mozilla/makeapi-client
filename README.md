@@ -730,7 +730,9 @@ This function will attempt to update a make.
 ** using the wrapped make update function documented above is recommended over this function **
 
 >`id` - **required** - The ID of the make you want to update
+>
 >`options` - **required** - An object representing a Make. See the list of make attributes above.
+>
 >`callback` a function to execute when the server completes or fails to update the make
 
 
@@ -756,6 +758,7 @@ makeapi
 This function will attempt to delete a make.
 
 >`id` - **required** - The ID of the make you want to delete
+>
 >`callback` a function to execute when the server completes or fails to delete the make
 
 
@@ -780,7 +783,9 @@ makeapi
 This function will add the user to the target makes' like array.
 
 >`id` - **required** - The ID of the make the user wants to like
+>
 >`maker` -- **required** The email address associated with the Webmaker account that is liking a make. It is up to the consumer application to verify that they are dealing with a logged in user before issuing this API call.
+>
 >`callback` A function to execute when the server completes or fails to mark the make as liked
 
 ####Example####
@@ -804,7 +809,9 @@ makeapi
 This function will remove the user from the target makes' like array.
 
 >`id` - **required** - The ID of the make the user wants to unlike
+>
 >`maker` -- **required** The email address associated with the Webmaker account which wishes to unlike a make. It is up to the consumer application to verify that they are dealing with a logged in user before issuing this API call.
+>
 >`callback` A function to execute when the server completes or fails to mark the make as unliked
 
 ####Example####
