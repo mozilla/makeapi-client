@@ -222,7 +222,7 @@ var module = module || undefined;
     [ "url", "contentType", "locale", "title",
       "description", "author", "published", "tags", "thumbnail",
       "username", "remixedFrom", "_id", "emailHash", "createdAt",
-      "updatedAt", "likes" ].forEach( function( prop ) {
+      "updatedAt", "likes", "reports" ].forEach( function( prop ) {
         wrapped[ prop ] = make[ prop ];
     });
 
@@ -392,7 +392,7 @@ var module = module || undefined;
         return this;
       },
 
-      like: function update( id, maker, callback ) {
+      like: function like( id, maker, callback ) {
         doXHR( "PUT", API_PREFIX + "like/" + id, { maker: maker }, callback );
         return this;
       },
@@ -405,7 +405,17 @@ var module = module || undefined;
       remove: function remove( id, callback ) {
         doXHR( "DELETE", API_PREFIX + id, callback );
         return this;
-      }
+      },
+
+      report: function report( id, maker, callback ) {
+        doXHR( "PUT", API_PREFIX + "report/" + id, { maker: maker }, callback );
+        return this;
+      },
+
+      cancelReport: function cancelReport( id, maker, callback ) {
+        doXHR( "PUT", API_PREFIX + "cancelReport/" + id, { maker: maker }, callback );
+        return this;
+      },
     };
   };
 
