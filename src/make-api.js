@@ -48,9 +48,10 @@ var module = module || undefined;
         return callback( err );
       }
 
-      var authenticated = hawk.client.authenticate( res, credentials, header.artifacts, { payload: JSON.stringify( body ) } );
-      if ( credentials && !authenticated ) {
-        return callback( "Warning: The response does not authenticate - your traffic may be getting intercepted and modified" );
+      if ( credentials ) {
+        if ( !hawk.client.authenticate( res, credentials, header.artifacts, { payload: JSON.stringify( body ) } ) ) {
+          return callback( "Warning: The response does not authenticate - your traffic may be getting intercepted and modified" );
+        }
       }
       if ( res.statusCode === 200 ) {
         callback( null, body );
