@@ -370,15 +370,19 @@ var module = module || undefined;
           querystring,
           function( err, data ) {
             if ( err ) {
-              callback( err );
-            } else {
-              // Wrap resulting makes with some extra API.
-              var hits = data.makes;
-              for( var i = 0; i < hits.length; i++ ) {
-                hits[ i ] = wrap( hits[ i ], options );
-              }
-              callback( null, hits, data.total );
+              return callback( err );
             }
+
+            if ( !data ) {
+              return callback( null, [], 0);
+            }
+
+            // Wrap resulting makes with some extra API.
+            var hits = data.makes;
+            for ( var i = 0; i < hits.length; i++ ) {
+              hits[ i ] = wrap( hits[ i ], options );
+            }
+            callback( null, hits, data.total );
           }
         );
       },
