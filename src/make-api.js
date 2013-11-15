@@ -71,7 +71,7 @@ var module = module || undefined;
       request.open( type, path, true );
     }
     if ( csrfToken ) {
-      request.setRequestHeader( "x-csrf-token", csrfToken );
+      request.setRequestHeader( "X-CSRF-Token", csrfToken ); // express.js uses a non-standard name for csrf-token
     }
     request.setRequestHeader( "Content-Type", "application/json; charset=utf-8" );
     request.onreadystatechange = function() {
