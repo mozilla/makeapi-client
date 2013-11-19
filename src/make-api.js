@@ -435,6 +435,16 @@ var module = module || undefined;
         return this;
       },
 
+      autocompleteTags: function autocompleteTags( term, size, callback ) {
+        if ( !callback && typeof size === "function" ) {
+          callback = size;
+          size = 10;
+        }
+        var query = "t=" + term + "&s=" + size;
+        doXHR( "GET", API_PREFIX + "tags", query, callback );
+        return this;
+      },
+
       report: function report( id, maker, callback ) {
         doXHR( "PUT", API_PREFIX + "report/" + id, { maker: maker }, callback );
         return this;
