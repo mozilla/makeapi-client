@@ -221,7 +221,7 @@ var module = module || undefined;
 
     // Extend wrapped with contents of make
     [ "url", "contentType", "locale", "title",
-      "description", "author", "published", "tags", "thumbnail",
+      "description", "author", "isListed", "tags", "thumbnail",
       "username", "remixedFrom", "_id", "emailHash", "createdAt",
       "updatedAt", "likes", "reports" ].forEach( function( prop ) {
         wrapped[ prop ] = make[ prop ];
