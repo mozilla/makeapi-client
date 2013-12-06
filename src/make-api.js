@@ -6,8 +6,6 @@
 var module = module || undefined;
 
 (function ( module ) {
-  "use strict";
-
   var API_PREFIX = "/api/20130724/make/";
 
   var Make,
@@ -250,25 +248,37 @@ var module = module || undefined;
       csrfToken = options.csrf;
     }
 
-    function mapAndJoinTags( tags ) {
-      return tags.map(function( val ) {
+    function addPair( queryPairs, key, val, not ) {
+      val = val ? val.toString() : "";
+      if ( !val.length ) {
+        return this;
+      }
+      val = not ? "{!}" + val : val;
+      queryPairs.push( encodeURIComponent( key ) + "=" + encodeURIComponent( val ) );
+    }
+
+    function mapAndJoinTerms( terms ) {
+      return terms.map(function( val ) {
         return val.trim();
       }).join( "," );
     }
 
+    function addArrayPair( queryPairs, options, field, not ){
+      if ( options ) {
+        var terms = options[ field ] || options,
+            execution = options.execution || "and";
+        if ( Array.isArray( terms ) ) {
+          terms = mapAndJoinTerms( terms );
+        } else {
+          terms = mapAndJoinTerms( terms.split( "," ) );
+        }
+        terms = execution + "," + terms;
+        addPair( queryPairs, field, terms, not );
+      }
+    }
+
     return {
       queryPairs: [],
-
-      addPair: function( key, val, not ) {
-        val = val ? val.toString() : "";
-
-        if ( !val.length ) {
-          return this;
-        }
-        val = not ? "{!}" + val : val;
-        this.queryPairs.push( encodeURIComponent( key ) + "=" + encodeURIComponent( val ) );
-        return this;
-      },
 
       find: function( options ) {
         options = options || {};
@@ -286,65 +296,76 @@ var module = module || undefined;
       },
 
       author: function( name, not ) {
-        return this.addPair( "author", name, not );
+        addPair( this.queryPairs, "author", name, not );
+        return this;
       },
 
       user: function( id, not ) {
-        return this.addPair( "user", id, not );
+        addPair( this.queryPairs, "user", id, not );
+        return this;
       },
 
       tags: function( options, not ) {
-        if ( options ) {
-          var tags = options.tags || options,
-              execution = options.execution || "and";
-
-          if ( Array.isArray( tags ) ) {
-            tags = mapAndJoinTags( tags );
-          } else {
-            tags = mapAndJoinTags( tags.split( "," ) );
-          }
-
-          tags = execution + "," + tags;
-
-          return this.addPair( "tags", tags, not );
-        }
+        addArrayPair( this.queryPairs, options, "tags", not );
         return this;
       },
 
       tagPrefix: function( prefix, not ) {
-        return this.addPair( "tagPrefix", prefix, not );
+        addPair( this.queryPairs, "tagPrefix", prefix, not );
+        return this;
       },
 
       url: function( url, not ) {
-        return this.addPair( "url", url, not );
+        addPair( this.queryPairs, "url", url, not );
+        return this;
       },
 
       contentType: function( contentType, not ) {
-        return this.addPair( "contentType", contentType, not );
+        addPair( this.queryPairs, "contentType", contentType, not );
+        return this;
       },
 
       remixedFrom: function( id, not ) {
-        return this.addPair( "remixedFrom", id, not );
+        addPair( this.queryPairs, "remixedFrom", id, not );
+        return this;
       },
 
-      id: function( id, not ) {
-        return this.addPair( "id", id, not );
+      id: function( ids, not ) {
+        if ( typeof ids === "string" ) {
+          addPair( this.queryPairs, "id", ids, not );
+        } else {
+          // override execution to be "or"
+          if ( Array.isArray( ids ) ) {
+            ids = {
+              id: ids,
+              execution: "or"
+            };
+          } else {
+            ids.execution = "or";
+          }
+          addArrayPair( this.queryPairs, ids, "id", not );
+        }
+        return this;
       },
 
       title: function( title, not ) {
-        return this.addPair( "title", title, not );
+        addPair( this.queryPairs, "title", title, not );
+        return this;
       },
 
       description: function( desc, not ) {
-        return this.addPair( "description", desc, not );
+        addPair( this.queryPairs, "description", desc, not );
+        return this;
       },
 
       limit: function( num ) {
-        return this.addPair( "limit", num );
+        addPair( this.queryPairs, "limit", num );
+        return this;
       },
 
       page: function( num ) {
-        return this.addPair( "page", num );
+        addPair( this.queryPairs, "page", num );
+        return this;
       },
 
       sortByField: function( field, direction ) {
@@ -352,13 +373,15 @@ var module = module || undefined;
         if ( typeof field === "string" ) {
           sortOpts = field;
           sortOpts += "," + ( direction ? direction : "desc" );
-          return this.addPair( "sortByField", sortOpts );
+          addPair( this.queryPairs, "sortByField", sortOpts );
+          return this;
         }
         return this;
       },
 
       or: function() {
-        return this.addPair( "or", "1" );
+        addPair( this.queryPairs, "or", "1" );
+        return this;
       },
 
       then: function( callback ) {
