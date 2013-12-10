@@ -331,6 +331,13 @@ var module = module || undefined;
         return this.addPair( "id", id, not );
       },
 
+      ids: function( ids, not ) {
+        if ( Array.isArray( ids ) ) {
+          ids = ids.join( "," );
+        }
+        return this.addPair( "ids", ids, not );
+      },
+
       title: function( title, not ) {
         return this.addPair( "title", title, not );
       },
