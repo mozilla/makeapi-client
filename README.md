@@ -702,7 +702,7 @@ This function will attempt to create a make.
 >`options` - **required** - An Object defining a make. it should look have the following attributes
 >
 > + `maker` - **required** - The email address of the maker
-> + `make` - ** required** - An object representing a Make. See the list of make attributes above.
+> + `make` - **required** - An object representing a Make. See the list of make attributes above.
 >
 >`callback` - **required** - a function to execute when the server completes or fails to create the make
 
