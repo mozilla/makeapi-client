@@ -143,10 +143,10 @@ makeapi
 
 ###`user( name, not )`###
 
-Add a filter to the search for the specified username/email address.
+Add a filter to the search for the specified username.
 
->`name` - **required** - A string containing the username or email address of the maker you want to filter for
->`not` - Boolean value that when set `true`, will force a filter for makes that **Do Not** contain the specified user or email address
+>`name` - **required** - A string containing the username of the maker you want to filter for
+>`not` - Boolean value that when set `true`, will force a filter for makes that **Do Not** contain the specified user
 
 ####Example####
 ```
