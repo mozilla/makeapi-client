@@ -444,6 +444,16 @@ var module = module || undefined;
         doXHR( "PUT", API_PREFIX + "cancelReport/" + id, { maker: maker }, callback );
         return this;
       },
+
+      remixCount: function remixCount( id, options, callback ) {
+        options = options || {};
+        var from = options.from || "",
+            to = options.to || "",
+            qs = "id=" + id + "&from=" + from + "&to=" + to;
+
+        doXHR( "GET", API_PREFIX + "remixCount", qs, callback );
+        return this;
+      }
     };
   };
 
