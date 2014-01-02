@@ -699,7 +699,7 @@ These functions require auth (see constructor docs)
 
 This function will attempt to create a make.
 
->`options` - **required** - An Object defining a make. it should look have the following attributes
+>`options` - **required** - An Object defining a make. it should have the following attributes
 >
 > + `maker` - **required** - The email address of the maker
 > + `make` - **required** - An object representing a Make. See the list of make attributes above.
@@ -810,7 +810,7 @@ This function will remove the user from the target makes' like array.
 
 >`id` - **required** - The ID of the make the user wants to unlike
 >
->`maker` -- **required** The email address associated with the Webmaker account which wishes to unlike a make. It is up to the consumer application to verify that they are dealing with a logged in user before issuing this API call.
+>`maker` - **required** - The email address associated with the Webmaker account which wishes to unlike a make. It is up to the consumer application to verify that they are dealing with a logged in user before issuing this API call.
 >
 >`callback` A function to execute when the server completes or fails to mark the make as unliked
 
@@ -826,6 +826,43 @@ makeapi
         // something went horribly wrong
       }
       // the make that was updated is in updatedMake
+    }
+  );
+```
+
+###`remixCount( id, options, callback )`###
+
+This function will return the count of remixes for a given project in a given date range.
+
+>`id` - **required** - The ID of the make
+>
+>`options` - An optional Object defining a make. it should have the following attributes
+>
+> + `from` - Unix style timestamp indicating the start date for the remix count query. If undefined, from is ignored.
+> + `to` - Unix style timestamp indicating the end date for the remix count query. The server's current time is used if undefined.
+>
+>`callback` - **required** - A function to pass the result into
+
+####Example####
+```
+var makeapi = new Make( optionsObj );
+
+// count remixes of the given project made between 7 and 3 days ago
+makeapi
+  .remixCount(
+    "idofthemake",
+    {
+      // 1 week ago
+      from: Date.now() - ( 1000 * 60 * 60 * 24 * 7 )
+      // three days ago
+      to: Date.now() - ( 1000 * 60 * 60 * 24 * 3 )
+    },
+    function( err, result ) {
+      if( err ) {
+        // something went wrong
+      }
+      // Number of remixes!
+      console.log( result.count );
     }
   );
 ```
