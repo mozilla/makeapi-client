@@ -234,10 +234,14 @@ var module = module || undefined;
 
   // Shorthand for creating a Make Object
   Make = function Make( options ) {
+    // default search path - changed if Hawk credentials are provided
+    var searchPath = "search";
+
     apiURL = options.apiURL;
 
     if ( options.hawk ) {
       credentials = options.hawk;
+      searchPath = "protectedSearch";
     } else if ( options.auth ) {
       auth = options.auth.split( ":" );
       user = auth[ 0 ];
@@ -389,7 +393,7 @@ var module = module || undefined;
 
         this.queryPairs = [];
 
-        doXHR( "GET", API_PREFIX + "search",
+        doXHR( "GET", API_PREFIX + searchPath,
           querystring,
           function( err, data ) {
             if ( err ) {
