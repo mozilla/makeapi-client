@@ -352,6 +352,13 @@ var module = module || undefined;
         return this;
       },
 
+      ids: function( ids, not ) {
+        if ( Array.isArray( ids ) ) {
+          ids = ids.join( "," );
+        }
+        return this.addPair( "ids", ids, not );
+      },
+
       title: function( title, not ) {
         addPair( this.queryPairs, "title", title, not );
         return this;
