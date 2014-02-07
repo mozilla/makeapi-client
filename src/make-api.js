@@ -319,8 +319,21 @@ var module = module || undefined;
         return this;
       },
 
-      url: function( url, not ) {
-        addPair( this.queryPairs, "url", url, not );
+      url: function( urls, not ) {
+        if ( typeof urls === "string" ) {
+          addPair( this.queryPairs, "url", urls, not );
+        } else {
+          // override execution to be "or"
+          if ( Array.isArray( urls ) ) {
+            urls = {
+              url: urls,
+              execution: "or"
+            };
+          } else {
+            urls.execution = "or";
+          }
+          addArrayPair( this.queryPairs, urls, "url", not );
+        }
         return this;
       },
 
