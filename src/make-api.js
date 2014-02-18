@@ -30,7 +30,8 @@ var module = module || undefined;
           method: type,
           uri: path,
           json: data,
-          headers: {}
+          headers: {},
+          timeout: 10000 // timeout after 10s
         },
         header;
 
@@ -62,6 +63,11 @@ var module = module || undefined;
 
   function browserStrategy( type, path, data, callback ) {
     var request = new XMLHttpRequest();
+
+    // If the XHR object supports a timeout add a 10s timeout
+    if (request.timeout === 0) {
+      request.timeout = 10000;
+    }
 
     if ( auth ) {
       request.open( type, path, true, user, pass );
