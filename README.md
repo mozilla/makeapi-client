@@ -10,6 +10,8 @@ Returns an instance of the client library that interacts with a Make API server.
 >`options` - An object with the following attributes:
 >
 > + `apiURL` - **required** - A valid URL pointing to the Make API server
+> + `apiPrefix` - **optional** - A path to append the API URL, defaults to `"/api/20130724/make/"`
+> + `csrfToken` - **optional** - An optional CSRF token to send in request headers (browser environments only)
 > + `hawk` - **optional** - Hawk credentials to be used for authentication. In order to Create, Update, Delete, Like and Unlike make records, you must provide auth. Without this, you will only be permitted to search for makes.
 
 ####Example####
@@ -26,9 +28,7 @@ var makeapiTwo = new Make({
     // secret shared key
     key: "00000000-0000-0000-000000000000",
     // public key
-    id: "00000000-0000-0000-000000000000",
-    // algorithm used to calculate Request MAC - **The Make API Server requires sha265**
-    algorithm: "sha256"
+    id: "00000000-0000-0000-000000000000"
   }
 });
 ```
