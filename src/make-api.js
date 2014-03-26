@@ -165,6 +165,7 @@ var module = module || undefined;
     },
 
     wrap: function ( make ) {
+      var self = this;
       // Lazily extract various tags types as needed, and memoize.
       function lazyInitTags( o, name, regexp ) {
         delete o[ name ];
@@ -183,20 +184,20 @@ var module = module || undefined;
         // strings, joined with a ':', and the first string does not
         // contain an '@'
         get appTags() {
-          return lazyInitTags( this, 'appTags', /^[^@]+\:[^:]+/ );
+          return lazyInitTags( self, 'appTags', /^[^@]+\:[^:]+/ );
         },
 
         // User Tags are "some@something.com:foo", which means two
         // strings, joined with a ':', and the first string contains
         // an email address (i.e., an '@').
         get userTags() {
-          return lazyInitTags( this, 'userTags', /^[^@]+@[^@]+\:[^:]+/ );
+          return lazyInitTags( self, 'userTags', /^[^@]+@[^@]+\:[^:]+/ );
         },
 
         // Raw Tags are "foo" or "#fooBar", which means one string
         // which does not include a colon.
         get rawTags() {
-          return lazyInitTags( this, 'rawTags', /^[^:]+$/ );
+          return lazyInitTags( self, 'rawTags', /^[^:]+$/ );
         },
 
         // Determine whether this make is tagged with any of the tags
@@ -218,7 +219,7 @@ var module = module || undefined;
         // The current make's URL is used as a key.
         remixes: function( callback ) {
           callback = callback || function(){};
-          this
+          self
           .find({ remixedFrom: wrapped._id })
           .then( callback );
         },
@@ -251,14 +252,14 @@ var module = module || undefined;
             callback( null, null );
             return;
           }
-          this
+          self
           .find({ _id: wrapped._id })
           .then( callback );
         },
 
         update: function( email, callback ) {
           callback = callback || function(){};
-          this
+          self
           .update( wrapped._id, wrapped, callback );
         }
 
