@@ -266,7 +266,7 @@ var module = module || undefined;
       };
 
       // Extend wrapped with contents of make
-      [ "url", "contentType", "locale", "title",
+      [ "url", "contentType", "locale", "title", "remixCount",
         "description", "author", "published", "tags", "thumbnail",
         "username", "remixedFrom", "_id", "emailHash", "createdAt",
         "updatedAt", "likes", "reports", "remixurl", "editurl" ].forEach( function( prop ) {
@@ -381,6 +381,11 @@ var module = module || undefined;
 
     or: function() {
       this.addPair( this.queryPairs, "or", "1" );
+      return this;
+    },
+
+    getRemixCounts: function() {
+      this.addPair( this.queryPairs, "getRemixCounts", "true" );
       return this;
     },
 
