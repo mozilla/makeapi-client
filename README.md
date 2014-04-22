@@ -495,6 +495,26 @@ makeapi
   });
 ```
 
+###`getRemixCounts()`###
+
+Will tell the MakeAPI Server to hydrate each make's remix count value in the search results. NOTE: This option can increase the response time of the request.
+
+####Example####
+```
+var makeapi = new Make( optionsObj );
+
+makeapi
+  .getRemixCounts()
+  .tags( "makerparty" )
+  .then(function( err, makes ) {
+    if ( err ) {
+      // handle error case
+    }
+    // handle success!
+    console.log(makes[0].remixCount);
+  });
+```
+
 ## Search Results ##
 
 The Client Library wraps each make result in some API sugar for easy use. Call the following functions on individual make search results. i.e. `makes[4].rawTags()`
