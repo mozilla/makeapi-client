@@ -358,6 +358,11 @@ var module = module || undefined;
       return this;
     },
 
+    likedByUser: function( username ) {
+      this.addPair( this.queryPairs, "likedByUser", username );
+      return this;
+    },
+
     limit: function( num ) {
       this.addPair( this.queryPairs, "limit", num );
       return this;
