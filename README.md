@@ -906,3 +906,151 @@ makeapi
     }
   );
 ```
+
+###`createList( options, callback )`###
+
+Creates an ordered Make list with the given options
+
+>`options` - **required** - it should have the following attributes
+>
+> + `makes` - **required** - An Array of Make IDs
+> + `userId` - **required** The Unique user ID of the webmaker creating the list
+> + `title` - An optional title for the List - helps identifying the content of a list.
+>
+>`callback` - **required** - A function to pass the result into
+
+####Example####
+```
+var makeapi = new Make( optionsObj );
+
+makeapi
+  .createList(
+    {
+      makes: [ "123", "456", "789" ],
+      userId: 12345
+    },
+    function( err, list ) {
+      if( err ) {
+        // something went wrong
+      }
+      // your new list!
+      // NOTE: The list's makes will be represented as ID's in the response. To get the Make Data, request the list by ID using the GET route.
+      console.log( list );
+    }
+  );
+```
+
+###`updateList( id, options, callback )`###
+
+Updates a Make list with the given options
+
+>`id` - **required** - ID of the list that is to updated
+>
+>`options` - **required** - It should have the following attributes
+>
+> + `userId` - **required** - The Unique user ID of the webmaker updating the list
+> + `makes` - An Array of Make IDs
+> + `title` - An optional title for the List - helps identifying the content of a list.
+>
+>`callback` - **required** - A function to pass the result into
+
+####Example####
+```
+var makeapi = new Make( optionsObj );
+
+makeapi
+  .updateList(
+    "id-of-a-list",
+    {
+      userId: 12345,
+      makes: [ "123", "456" ]
+    },
+    function( err, list ) {
+      if( err ) {
+        // something went wrong
+      }
+      // updated list successfully!
+      // NOTE: The list's makes will be represented as ID's in the response. To get the Make Data, request the list by ID using the GET route.
+      console.log( list );
+    }
+  );
+```
+
+###`removeList( id, userId, callback )`###
+
+Deletes a Make list with the given options
+
+>`id` - **required** - ID of the list that is to updated
+>`userId` - **required** - The Unique user ID of the webmaker deleting the list
+>`callback` - **required** - A function to pass the result into
+
+####Example####
+```
+var makeapi = new Make( optionsObj );
+
+makeapi
+  .updateList(
+    "id-of-a-list",
+    12345,
+    function( err, list ) {
+      if( err ) {
+        // something went wrong
+      }
+      // deleted list successfully!
+      console.log( list );
+    }
+  );
+```
+
+###`getList( id, callback, noWrap )`###
+
+Get a Make list with the given ID
+
+>`id` - **required** - ID of the list that is to retrieved
+>`callback` - **required** - A function to pass the result into
+>`noWrap` - optional boolean value. If set to true, the make data will not be passed through the wrap function of the makeapi-client
+
+####Example####
+```
+var makeapi = new Make( optionsObj );
+
+makeapi
+  .getList(
+    "id-of-a-list",
+    function( err, listData ) {
+      if( err ) {
+        // something went wrong
+      }
+      console.log( listData ); // wrapped list data!
+    }
+  ).getList(
+    "id-of-another-list",
+    function( err, listData ) {
+      // unwrapped list data
+    },
+    true // noWrap is true!
+  );
+```
+
+###`getListsByUser( userId, callback )`###
+
+Get a Users lists
+
+>`userId` - **required** - ID of the user whose lists are to be retrieved
+>`callback` - **required** - A function to pass the result into
+
+####Example####
+```
+var makeapi = new Make( optionsObj );
+
+makeapi
+  .getListsByUser(
+    123,
+    function( err, lists ) {
+      if( err ) {
+        // something went wrong
+      }
+      console.log( lists );
+    }
+  );
+```
