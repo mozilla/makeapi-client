@@ -475,6 +475,26 @@ makeapi
   });
 ```
 
+###`likedByUser( username )`###
+
+Filter for makes that the given user has liked
+
+>`username` - **required** - A String representing the username
+
+####Example####
+```
+var makeapi = new Make( optionsObj );
+
+makeapi
+  .likedByUser( "webmaker" )
+  .then(function( err, makes ) {
+    if ( err ) {
+      // handle error case
+    }
+    // handle success!
+  });
+```
+
 ###`or()`###
 
 Changes the boolean logic applied to search filters from AND to OR
