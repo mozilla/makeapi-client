@@ -6,7 +6,7 @@
 var module = module || undefined;
 
 (function ( module ) {
-  var API_PREFIX = "/api/20130724/make/";
+  var API_PREFIX = "/api/20130724/";
 
   var selectedXHRStrategy,
       hawk,
@@ -28,7 +28,8 @@ var module = module || undefined;
       var searchPath = "search";
 
       this.apiURL = options.apiURL;
-      this.apiPrefix = options.apiPrefix || API_PREFIX;
+      this.makePrefix = ( options.apiPrefix || API_PREFIX ) + "make/";
+      this.listPrefix = ( options.apiPrefix || API_PREFIX ) + "list/";
 
       if ( options.hawk ) {
         if ( !options.hawk.key || !options.hawk.id ) {
@@ -42,7 +43,7 @@ var module = module || undefined;
         searchPath = "protectedSearch";
       }
 
-      this.searchPath = this.apiPrefix + searchPath;
+      this.searchPath = this.makePrefix + searchPath;
 
       if ( options.csrf ) {
         this.csrfToken = options.csrf;
@@ -422,27 +423,27 @@ var module = module || undefined;
     },
 
     create: function create( options, callback ) {
-      this.doXHR( "POST", this.apiPrefix, options, callback );
+      this.doXHR( "POST", this.makePrefix, options, callback );
       return this;
     },
 
     update: function update( id, options, callback ) {
-      this.doXHR( "PUT", this.apiPrefix + id, options, callback );
+      this.doXHR( "PUT", this.makePrefix + id, options, callback );
       return this;
     },
 
     like: function like( id, maker, callback ) {
-      this.doXHR( "PUT", this.apiPrefix + "like/" + id, { maker: maker }, callback );
+      this.doXHR( "PUT", this.makePrefix + "like/" + id, { maker: maker }, callback );
       return this;
     },
 
     unlike: function update( id, maker, callback ) {
-      this.doXHR( "PUT", this.apiPrefix + "unlike/" + id, { maker: maker }, callback );
+      this.doXHR( "PUT", this.makePrefix + "unlike/" + id, { maker: maker }, callback );
       return this;
     },
 
     remove: function remove( id, callback ) {
-      this.doXHR( "DELETE", this.apiPrefix + id, callback );
+      this.doXHR( "DELETE", this.makePrefix + id, callback );
       return this;
     },
 
@@ -452,17 +453,17 @@ var module = module || undefined;
         size = 10;
       }
       var query = "t=" + term + "&s=" + size;
-      this.doXHR( "GET", this.apiPrefix + "tags", query, callback );
+      this.doXHR( "GET", this.makePrefix + "tags", query, callback );
       return this;
     },
 
     report: function report( id, maker, callback ) {
-      this.doXHR( "PUT", this.apiPrefix + "report/" + id, { maker: maker }, callback );
+      this.doXHR( "PUT", this.makePrefix + "report/" + id, { maker: maker }, callback );
       return this;
     },
 
     cancelReport: function cancelReport( id, maker, callback ) {
-      this.doXHR( "PUT", this.apiPrefix + "cancelReport/" + id, { maker: maker }, callback );
+      this.doXHR( "PUT", this.makePrefix + "cancelReport/" + id, { maker: maker }, callback );
       return this;
     },
 
@@ -472,7 +473,56 @@ var module = module || undefined;
           to = options.to || "",
           qs = "id=" + id + "&from=" + from + "&to=" + to;
 
-      this.doXHR( "GET", this.apiPrefix + "remixCount", qs, callback );
+      this.doXHR( "GET", this.makePrefix + "remixCount", qs, callback );
+      return this;
+    },
+
+    createList: function createList( options, callback ) {
+      this.doXHR( "POST", this.listPrefix, options, callback );
+      return this;
+    },
+
+    updateList: function updateList( id, options, callback) {
+      this.doXHR( "PUT", this.listPrefix + id, options, callback );
+      return this;
+    },
+
+    removeList: function removeList( id, userId, callback ) {
+      this.doXHR( "DELETE", this.listPrefix + id, { userId: userId }, callback );
+      return this;
+    },
+
+    getList: function getList( id, callback, noWrap ) {
+      var self = this;
+      this.doXHR(
+        "GET",
+        this.listPrefix + id,
+        function( err, data ) {
+          if ( err ) {
+            return callback( err );
+          }
+
+          if ( !data ) {
+            return callback( null, [], 0);
+          }
+
+          if ( noWrap ) {
+            return callback( null, data.makes );
+          }
+
+          // Wrap resulting makes with some extra API.
+          var hits = data.makes;
+          for ( var i = 0; i < hits.length; i++ ) {
+            hits[ i ] = self.wrap( hits[ i ] );
+          }
+          callback( null, hits );
+        }
+      );
+      return this;
+    },
+
+    getListsByUser: function( userId, callback ) {
+      this.doXHR( "GET", this.listPrefix + "user/" + userId, callback );
       return this;
     }
   };
