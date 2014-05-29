@@ -506,15 +506,14 @@ var module = module || undefined;
           }
 
           if ( noWrap ) {
-            return callback( null, data.makes );
+            return callback( null, data );
           }
 
           // Wrap resulting makes with some extra API.
-          var hits = data.makes;
-          for ( var i = 0; i < hits.length; i++ ) {
-            hits[ i ] = self.wrap( hits[ i ] );
+          for ( var i = 0; i < data.makes.length; i++ ) {
+            data.makes[ i ] = self.wrap( data.makes[ i ] );
           }
-          callback( null, hits );
+          callback( null, data );
         }
       );
       return this;
