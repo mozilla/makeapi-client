@@ -92,13 +92,12 @@ var module = module || undefined;
     browserStrategy: function( type, path, data, callback ) {
       var request = new XMLHttpRequest();
 
+      request.open( type, path, true );
+
       // If the XHR object supports a timeout add a 10s timeout
       if (request.timeout === 0) {
         request.timeout = 10000;
       }
-
-      request.open( type, path, true );
-
       if ( this.csrfToken ) {
         request.setRequestHeader( "X-CSRF-Token", this.csrfToken ); // express.js uses a non-standard name for csrf-token
       }
