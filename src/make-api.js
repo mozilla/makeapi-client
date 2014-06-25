@@ -293,11 +293,29 @@ var module = module || undefined;
       return wrapped;
     },
 
-    matchAny: function( term ) {
+    matchAny: function( term, options ) {
+      var searchSettings,
+          key,
+          ignoreFields,
+          notFields;
+
+      options  = options || {};
+
+      ignoreFields = options.ignore || [];
+      ignoreFields = Array.isArray( ignoreFields ) ? ignoreFields : [ ignoreFields ];
+
+      notFields = options.reverseFilters || [];
+      notFields = Array.isArray( notFields ) ? notFields : [ notFields ];
+
       for ( var i = MATCH_ANY_FIELDS.length - 1; i >= 0; i-- ) {
-        this[ MATCH_ANY_FIELDS[i] ]( term );
+        key = MATCH_ANY_FIELDS[i];
+        if ( ignoreFields.indexOf( key ) === -1 ) {
+          this[ MATCH_ANY_FIELDS[i] ]( term, notFields.indexOf( key ) !== -1 );
+        }
       }
-      this.or();
+      if ( !options.no_or ) {
+        this.or();
+      }
       return this;
     },
 
