@@ -8,6 +8,19 @@ var module = module || undefined;
 (function ( module ) {
   var API_PREFIX = "/api/20130724/";
 
+  var MATCH_ANY_FIELDS = [
+    "author",
+    "contentType",
+    "description",
+    "id",
+    "remixedFrom",
+    "tagPrefix",
+    "tags",
+    "title",
+    "url",
+    "user"
+  ];
+
   var selectedXHRStrategy,
       hawk,
       request;
@@ -278,6 +291,14 @@ var module = module || undefined;
       wrapped.id = wrapped._id;
 
       return wrapped;
+    },
+
+    matchAny: function( term ) {
+      for ( var i = MATCH_ANY_FIELDS.length - 1; i >= 0; i-- ) {
+        this[ MATCH_ANY_FIELDS[i] ]( term );
+      }
+      this.or();
+      return this;
     },
 
     find: function( options ) {
