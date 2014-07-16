@@ -343,7 +343,7 @@ var module = module || undefined;
         } else {
           ids.execution = "or";
         }
-        addArrayPair( this.queryPairs, ids, "id", not );
+        this.addArrayPair( this.queryPairs, ids, "id", not );
       }
       return this;
     },
