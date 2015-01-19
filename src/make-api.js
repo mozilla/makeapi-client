@@ -8,7 +8,7 @@ var module = module || undefined;
 (function ( module ) {
   var API_PREFIX = "/api/20130724/";
 
-  var MATCH_ANY_FIELDS = [
+  var MULTI_SEARCH_FIELDS = [
     "author",
     "contentType",
     "description",
@@ -293,26 +293,22 @@ var module = module || undefined;
       return wrapped;
     },
 
-    multi: function(term, options) {
+    multi: function(term, ignore) {
       var searchSettings,
           key,
-          ignoreFields,
           notFields;
 
-      options  = options || {};
+      var self = this;
 
-      ignoreFields = options.ignore || [];
-      ignoreFields = Array.isArray( ignoreFields ) ? ignoreFields : [ ignoreFields ];
+      ignore  = ignore || [];
+      ignore = Array.isArray( ignore ) ? ignore : [ ignore ];
 
-      notFields = options.reverseFilters || [];
-      notFields = Array.isArray( notFields ) ? notFields : [ notFields ];
-
-      for ( var i = MATCH_ANY_FIELDS.length - 1; i >= 0; i-- ) {
-        key = MATCH_ANY_FIELDS[i];
-        if ( ignoreFields.indexOf( key ) === -1 ) {
-          this[ MATCH_ANY_FIELDS[i] ]( term, notFields.indexOf( key ) !== -1 );
+      MULTI_SEARCH_FIELDS.forEach(function(field, idx) {
+        if ( ignore.indexOf( field ) === -1 ) {
+          self[ MULTI_SEARCH_FIELDS[ idx ] ]( term );
         }
-      }
+      });
+
       return this;
     },
 
