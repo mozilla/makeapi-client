@@ -293,7 +293,7 @@ var module = module || undefined;
       return wrapped;
     },
 
-    matchAny: function( term, options ) {
+    multi: function(term, options) {
       var searchSettings,
           key,
           ignoreFields,
@@ -313,10 +313,16 @@ var module = module || undefined;
           this[ MATCH_ANY_FIELDS[i] ]( term, notFields.indexOf( key ) !== -1 );
         }
       }
-      if ( !options.no_or ) {
-        this.or();
-      }
       return this;
+    },
+
+    any: function( term, options ) {
+      this.or();
+      return this.multi(term, options);
+    },
+
+    all: function( term, options ) {
+      return this.multi(term, options);
     },
 
     find: function( options ) {
