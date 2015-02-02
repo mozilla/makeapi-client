@@ -456,6 +456,16 @@ var module = module || undefined;
       return this;
     },
 
+    tag: function tag( id, newTag, callback ) {
+      this.doXHR( "PUT", this.makePrefix + id + "/tag/" + newTag, callback );
+      return this;
+    },
+
+    untag: function untag( id, deleteTag, callback ) {
+      this.doXHR( "DELETE", this.makePrefix + id + "/tag/" + deleteTag, callback );
+      return this;
+    },
+
     report: function report( id, maker, callback ) {
       this.doXHR( "PUT", this.makePrefix + "report/" + id, { maker: maker }, callback );
       return this;
