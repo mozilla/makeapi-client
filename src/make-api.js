@@ -457,11 +457,17 @@ var module = module || undefined;
     },
 
     tag: function tag( id, newTag, callback ) {
+      if ( !id || !newTag ) {
+        throw new Error( "Missing required parameter" );
+      }
       this.doXHR( "PUT", this.makePrefix + id + "/tag/" + newTag, callback );
       return this;
     },
 
     untag: function untag( id, deleteTag, callback ) {
+      if ( !id || !deleteTag ) {
+        throw new Error( "Missing required parameter" );
+      }
       this.doXHR( "DELETE", this.makePrefix + id + "/tag/" + deleteTag, callback );
       return this;
     },
