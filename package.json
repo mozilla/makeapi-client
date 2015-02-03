@@ -1,6 +1,6 @@
 {
   "name": "makeapi-client",
-  "version": "0.5.28",
+  "version": "0.5.29",
   "description": "MakeAPI client library",
   "main": "./index.js",
   "repository": {
