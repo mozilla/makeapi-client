@@ -472,6 +472,14 @@ var module = module || undefined;
       return this;
     },
 
+    restore: function restore( id, callback ) {
+      if ( !id ) {
+        throw new Error( "Missing id parameter" );
+      }
+      this.doXHR( "POST", this.makePrefix + "restore/" + id, callback );
+      return this;
+    },
+
     report: function report( id, maker, callback ) {
       this.doXHR( "PUT", this.makePrefix + "report/" + id, { maker: maker }, callback );
       return this;
