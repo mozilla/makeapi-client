@@ -23,6 +23,10 @@ var module = module || undefined;
         throw new Error( "Missing options object or apiURL attribute!" );
       }
 
+      if ( options.testMode ) {
+        selectedXHRStrategy = "testModeStrategy";
+      }
+
       this.queryPairs = [];
 
       var searchPath = "search";
@@ -123,6 +127,14 @@ var module = module || undefined;
       };
       request.send( JSON.stringify( data ) );
     },
+
+    testModeStrategy: function(type, path, data, callback) {
+      callback(null, {
+        makes: this.fakeMakes,
+        total: this.fakeMakes.length
+      });
+    },
+
     doXHR: function( type, path, data, callback ) {
       if ( typeof data === "function" ) {
         callback = data;
@@ -546,7 +558,68 @@ var module = module || undefined;
     getListsByUser: function( userId, callback ) {
       this.doXHR( "GET", this.listPrefix + "user/" + userId, callback );
       return this;
-    }
+    },
+
+    fakeMakes: [{
+      "url": "https://mozteach.makes.org/thimble/hackable-profile-template",
+      "contentType": "application/x-thimble",
+      "locale": "",
+      "title": "Hackable Profile Template",
+      "description": "Tell us who you are and share your love of the web! Hack this template to make a Webmaker profile page.",
+      "author": "",
+      "published": true,
+      "tags":
+        [
+          "guide",
+          "lauramakes",
+          "templatehacks",
+          "thimble:project",
+          "webmaker:featured",
+          "webmaker:recommended",
+          "profile"
+        ],
+      "thumbnail": "https://stuff.webmaker.org/thumbnails/thumb-toolkit-webmaker-profile.png",
+      "remixedFrom": null,
+      "likes": [
+        {
+          "userId": 49868,
+          "_id": "524c39591845900d20000065"
+        }
+      ],
+      "reports": [ ],
+      "remixurl": "https://mozteach.makes.org/thimble/hackable-profile-template/remix",
+      "editurl": "https://mozteach.makes.org/thimble/hackable-profile-template/edit",
+      "_id": "51c0e432f13210f87f000006",
+      "createdAt": 1371595826193,
+      "updatedAt": 1380727129258,
+      "username": "mozteach",
+      "emailHash": "bf8989e824a53fe30cb60e7bc3a57fdc"
+    }, {
+      "url": "https://mozteach.makes.org/popcorn/1mx3",
+      "contentType": "application/x-popcorn",
+      "contenturl": "https://mozteach.makes.org/popcorn/1mx3_",
+      "locale": "en_US",
+      "title": "Episode 4: Ways of the Web",
+      "description": "",
+      "author": "mozteach",
+      "published": true,
+      "tags":
+        [
+          "storycamp",
+          "video"
+        ],
+      "thumbnail": "http://maker.mozillapopcorn.org/storycamp/img/story/chapter04.png",
+      "remixedFrom": null,
+      "likes": [ ],
+      "reports": [ ],
+      "remixurl": "https://mozteach.makes.org/popcorn/1mx3/remix",
+      "editurl": "https://mozteach.makes.org/popcorn/1mx3/edit",
+      "_id": "52a59d3b8f5ae4fc68000200",
+      "createdAt": 1386585403205,
+      "updatedAt": 1386593750621,
+      "username": "mozteach",
+      "emailHash": "bf8989e824a53fe30cb60e7bc3a57fdc"
+    }]
   };
 
   Make.m.init.prototype = Make.m;
