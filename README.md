@@ -12,7 +12,7 @@ Returns an instance of the client library that interacts with a Make API server.
 > + `apiURL` - **required** - A valid URL pointing to the Make API server
 > + `apiPrefix` - **optional** - A path to append the API URL, defaults to `"/api/20130724/make/"`
 > + `csrfToken` - **optional** - An optional CSRF token to send in request headers (browser environments only)
-> + `hawk` - **optional** - Hawk credentials to be used for authentication. In order to Create, Update, Delete, Like and Unlike make records, you must provide auth. Without this, you will only be permitted to search for makes.
+> + `hawk` - **optional** - Hawk credentials to be used for authentication. In order to Create, Update, Remove, Like and Unlike make records, you must provide auth. Without this, you will only be permitted to search for makes.
 
 ####Example####
 ```
@@ -731,7 +731,7 @@ Each Wrapped Make will have the following attributes, which can be changed and t
 + createdAt
 + updatedAt
 
-## Create, Update & Delete ##
+## Create, Update & Remove ##
 
 These functions require auth (see constructor docs)
 
@@ -793,13 +793,13 @@ makeapi
   );
 ```
 
-###`delete( id, callback )`###
+###`remove( id, callback )`###
 
-This function will attempt to delete a make.
+This function will attempt to remove a make.
 
->`id` - **required** - The ID of the make you want to delete
+>`id` - **required** - The ID of the make you want to remove
 >
->`callback` a function to execute when the server completes or fails to delete the make
+>`callback` a function to execute when the server completes or fails to remove the make
 
 
 ####Example####
@@ -807,13 +807,13 @@ This function will attempt to delete a make.
 var makeapi = new Make( optionsObjWithAuth ); // this NEEDS auth
 
 makeapi
-  .delete(
+  .remove(
     "idofthemakeiwanttoupdate",
-    function( err, deletedMake ) {
+    function( err, removedMake ) {
       if( err ) {
         // something went horribly wrong
       }
-      // the deleted make's data is in `deletedMake`
+      // the removed make's data is in `removedMake`
     }
   );
 ```
